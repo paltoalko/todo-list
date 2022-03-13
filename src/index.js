@@ -1,4 +1,5 @@
 import './style.css';
+import { compareAsc, format } from 'date-fns'
 
 const listsContainer = document.querySelector('[data-lists]')
 const newListForm = document.querySelector('[data-new-list-form]')
@@ -18,6 +19,9 @@ const LOCAL_STORAGE_LIST_KEY = 'task.lists'
 const LOCAL_STORAGE_SELECTED_LIST_ID_KEY = 'task.selectedListId'
 let lists =  JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || []
 let selectedListId = localStorage.getItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY)
+let taskDate 
+
+
 
 listsContainer.addEventListener('click' , e => {
     if (e.target.tagName.toLowerCase() === "li") {
@@ -26,15 +30,17 @@ listsContainer.addEventListener('click' , e => {
     }
 })
 
-taskContainer.addEventListener('click' , e => {
+taskContainer.addEventListener('click', e => {
     if (e.target.tagName.toLowerCase() === 'input') {
-        const selectedList = lists.find(list => list.id === selectedListId)
-        const selectedTask = selectedList.tasks.find(task => task.id === e.target.id)
-        selectedTask.complete = e.target.checked
-        save();
-        renderTaskCount(selectedList);
+      const selectedList = lists.find(list => list.id === selectedListId)
+      const selectedTask = selectedList.tasks.find(task => task.id === e.target.id)
+      selectedTask.complete = e.target.checked
+      save()
+      renderTaskCount(selectedList)
     }
-})
+  })
+
+
 
 deleteListButton.addEventListener('click', e => {
     lists = lists.filter(list => list.id !== selectedListId)
@@ -60,15 +66,29 @@ newListForm.addEventListener('submit', e => {
     saveAndRender()
  })
 
- newTaskForm.addEventListener('submit', e => {
+
+const getTaskDate = document.querySelector("[data-new-task-date-input]")
+
+
+getTaskDate.addEventListener('change', e => {
+     e.preventDefault
+     taskDate = getTaskDate.value
+     return taskDate
+     
+})
+
+
+newTaskForm.addEventListener('submit', e => {
     e.preventDefault();
     const taskName = newTaskInput.value
-    if (taskName == null || taskName === "") return
-    const task = createTask(taskName)
+    if (taskName == null || taskName === "" || taskDate == undefined || taskDate === "") return
+    const task = createTask(taskName,taskDate)
     newTaskInput.value = null
+    getTaskDate.value = null
     const selectedList = lists.find(list => list.id === selectedListId)
     selectedList.tasks.push(task)
     saveAndRender()
+
  })
 
 
@@ -76,8 +96,8 @@ function createList(name) {
      return { id:Date.now().toString(), name: name, tasks: [] }
  }
 
- function createTask (name) {
-    return { id:Date.now().toString(), name: name, complete: false }
+ function createTask (name,taskDate) {
+    return { id:taskDate.replaceAll('-','').toString(), name: name, taskDate: taskDate, complete: false }
  }
  
 function save () {
@@ -89,7 +109,6 @@ function saveAndRender() {
     save()
     render();
 }
-
 
 
 function render(){
@@ -105,6 +124,8 @@ function render(){
         renderTaskCount(selectedList)
         clearElement(taskContainer)
         renderTasks(selectedList)
+        sortTasks();
+    
     }
 }
 
@@ -115,15 +136,41 @@ function renderTasks(selectedList) {
         checkbox.id = task.id
         checkbox.checked = task.complete
         const label = taskElement.querySelector('label')
+        const date = taskElement.querySelector('.date-task')
+        date.append(task.taskDate)
+
+        const nameId = task.id.replaceAll('-','').toString()
+        taskElement.querySelector('div').classList.add(nameId)
+
         label.htmlFor = task.id
         label.append(task.name)
+
+
         taskContainer.appendChild(taskElement)
     })
-}
-
-function sortDueDate () {
     
 }
+
+function sortTasks () {
+    let tasks = document.querySelector("div.tasks")
+    let task = tasks.childNodes;
+    let taskArr = Array.from(task)
+    let i;
+    
+
+    taskArr.sort(function(a, b) {
+        return a.className == b.className
+                ? 0
+                : (a.className > b.className ? 1 : -1);
+      });
+
+      for (i = 0; i < taskArr.length; ++i) {
+        tasks.appendChild(taskArr[i]);
+      }
+    
+    
+}
+ 
 
 function renderTaskCount (selectedList) {
     const incompleteTaskCount = selectedList.tasks.filter(task => !task.complete).length
@@ -153,6 +200,10 @@ function clearElement (element) {
 }
 
 render();
+
+
+
+
 
 
 

@@ -9,5 +9,8 @@
   },
   "scripts": {
     "build": "webpack"
+  },
+  "dependencies": {
+    "date-fns": "^2.28.0"
   }
 }

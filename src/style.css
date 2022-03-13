@@ -117,6 +117,9 @@ form {
 	opacity: 0.4;
 }
 
+.new.list::placeholder {
+	color: white;
+}
 .new::placeholder {
 	opacity: 0.4;
 }
@@ -264,6 +267,15 @@ form {
 	transition: transform 150ms ease-in-out, -webkit-transform 150ms ease-in-out;
 }
 
+.date-task {
+	position: absolute;
+	top: 0;
+	left: 80%;
+	top: 50%;
+	color: red;
+	font-size: 0.75rem;
+}
+
 [type='checkbox']:checked + label::after {
 	-webkit-transform: scaleX(1);
 	transform: scaleX(1);
@@ -279,4 +291,16 @@ form {
 	left: 0;
 	bottom: -35px;
 	color: var(--clr-dark);
+}
+
+#date-input {
+	-webkit-align-items: center;
+	font-family: 'Montserrat', sans-serif;
+	overflow: hidden;
+	padding: 0;
+	-webkit-padding-start: 1px;
+	outline: none;
+	font-size: 0.75rem;
+	background-color: var(--clr-light);
+	border-color: transparent !important;
 }
