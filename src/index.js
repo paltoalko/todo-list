@@ -26,36 +26,38 @@ let lists = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
 let selectedListId = localStorage.getItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY);
 let taskDate;
 
-listsContainer.addEventListener("click", e => {
+listsContainer.addEventListener("click", (e) => {
 	if (e.target.tagName.toLowerCase() === "li") {
 		selectedListId = e.target.dataset.listId;
 		saveAndRender();
 	}
 });
 
-taskContainer.addEventListener("click", e => {
+taskContainer.addEventListener("click", (e) => {
 	if (e.target.tagName.toLowerCase() === "input") {
-		const selectedList = lists.find(list => list.id === selectedListId);
-		const selectedTask = selectedList.tasks.find(task => task.id === e.target.id);
+		const selectedList = lists.find((list) => list.id === selectedListId);
+		const selectedTask = selectedList.tasks.find(
+			(task) => task.id === e.target.id
+		);
 		selectedTask.complete = e.target.checked;
 		save();
 		renderTaskCount(selectedList);
 	}
 });
 
-deleteListButton.addEventListener("click", e => {
-	lists = lists.filter(list => list.id !== selectedListId);
+deleteListButton.addEventListener("click", (e) => {
+	lists = lists.filter((list) => list.id !== selectedListId);
 	selectedListId = null;
 	saveAndRender();
 });
 
-clearCompleteTaskButton.addEventListener("click", e => {
-	const selectedList = lists.find(list => list.id === selectedListId);
-	selectedList.tasks = selectedList.tasks.filter(task => !task.complete);
+clearCompleteTaskButton.addEventListener("click", (e) => {
+	const selectedList = lists.find((list) => list.id === selectedListId);
+	selectedList.tasks = selectedList.tasks.filter((task) => !task.complete);
 	saveAndRender();
 });
 
-newListForm.addEventListener("submit", e => {
+newListForm.addEventListener("submit", (e) => {
 	e.preventDefault();
 	const listName = newListInput.value;
 	if (listName == null || listName === "") return;
@@ -67,13 +69,13 @@ newListForm.addEventListener("submit", e => {
 
 const getTaskDate = document.querySelector("[data-new-task-date-input]");
 
-getTaskDate.addEventListener("change", e => {
+getTaskDate.addEventListener("change", (e) => {
 	e.preventDefault();
 	taskDate = getTaskDate.value;
 	return taskDate;
 });
 
-newTaskForm.addEventListener("submit", e => {
+newTaskForm.addEventListener("submit", (e) => {
 	e.preventDefault();
 	const taskName = newTaskInput.value;
 	if (
@@ -87,7 +89,7 @@ newTaskForm.addEventListener("submit", e => {
 	const task = createTask(taskName, taskDate);
 	newTaskInput.value = null;
 	getTaskDate.value = null;
-	const selectedList = lists.find(list => list.id === selectedListId);
+	const selectedList = lists.find((list) => list.id === selectedListId);
 	selectedList.tasks.push(task);
 	saveAndRender();
 });
@@ -118,7 +120,7 @@ function saveAndRender() {
 function render() {
 	clearElement(listsContainer);
 	renderLists();
-	const selectedList = lists.find(list => list.id === selectedListId);
+	const selectedList = lists.find((list) => list.id === selectedListId);
 
 	if (selectedListId == null) {
 		listDisplayContainer.style.display = "none";
@@ -133,7 +135,7 @@ function render() {
 }
 
 function renderTasks(selectedList) {
-	selectedList.tasks.forEach(task => {
+	selectedList.tasks.forEach((task) => {
 		const taskElement = document.importNode(taskTemplate.content, true);
 		const checkbox = taskElement.querySelector("input");
 		checkbox.id = task.id;
@@ -159,7 +161,10 @@ function sortTasks() {
 	let i;
 
 	// eslint-disable-next-line no-nested-ternary
+	// eslint-disable-next-line no-confusing-arrow
 	taskArr.sort((a, b) =>
+		// eslint-disable-next-line implicit-arrow-linebreak
+		// eslint-disable-next-line no-nested-ternary
 		a.className === b.className ? 0 : a.className > b.className ? 1 : -1
 	);
 
@@ -170,14 +175,14 @@ function sortTasks() {
 
 function renderTaskCount(selectedList) {
 	const incompleteTaskCount = selectedList.tasks.filter(
-		task => !task.complete
+		(task) => !task.complete
 	).length;
 	const taskString = incompleteTaskCount === 1 ? "task" : "tasks";
 	listCountElement.innerText = `${incompleteTaskCount} ${taskString} remaining`;
 }
 
 function renderLists() {
-	lists.forEach(list => {
+	lists.forEach((list) => {
 		const listElement = document.createElement("li");
 		listElement.dataset.listId = list.id;
 		listElement.classList.add("list-name");
